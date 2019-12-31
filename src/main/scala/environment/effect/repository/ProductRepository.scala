@@ -28,7 +28,7 @@ object ProductRepository {
             sql"""
                  |INSERT INTO product
                  | (name,user_id)
-                 | values (${productC.name},${productC.idUser})
+                 | values (${productC.name},${productC.userId})
       """.stripMargin
 
           query.update.run

@@ -11,6 +11,7 @@ object ProductService {
   def createProduct(pc: ProductCommand): ZIO[ProductEnvironment, ProductFailure, Unit] = ZIO.accessM { env =>
     for {
       _ <- validateField(pc.name).mapError(e => ProductFailure.FieldInvalid(e.getMessage))
+      _ <- if (pc.userId == 0) ZIO.fail(ProductFailure.ProductParserInvalid("userId error")) else ZIO.succeed(())
       _ <- env.productRep.createProduct(pc).mapError(e => ProductFailure.RepositoryInvalid(e))
     } yield ()
   }
