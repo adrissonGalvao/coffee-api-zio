@@ -1,6 +1,6 @@
 package support
 
-import domain.{User, UserCommand}
+import domain.{ProductCommand, User, UserCommand}
 import endpoint.r.ErrorResponse
 import io.circe.Json.Null
 import io.circe.generic.semiauto
@@ -22,7 +22,8 @@ trait CirceEncoder {
 
 trait CirceDecoder {
 
-  implicit val UserDecoder: Decoder[UserCommand] = semiauto.deriveDecoder[UserCommand]
+  implicit val UserDecoder: Decoder[UserCommand]              = semiauto.deriveDecoder[UserCommand]
+  implicit val ProductCommandDecoder: Decoder[ProductCommand] = semiauto.deriveDecoder[ProductCommand]
 
 }
 

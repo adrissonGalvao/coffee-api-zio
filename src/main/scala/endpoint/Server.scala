@@ -9,6 +9,7 @@ import org.http4s.server.blaze.BlazeServerBuilder
 import zio.{RIO, ZIO}
 import zio.interop.catz._
 import org.http4s.implicits._
+import cats.syntax.all._
 import typedconfig.HttpServerConfig
 
 object Server {
@@ -17,9 +18,10 @@ object Server {
 
   def createRoutes(basePath: String): Kleisli[ServerRIO, Request[ServerRIO], Response[ServerRIO]] = {
 
-    val userEndpoint = new UserEndpoint[AppEnvironment]("user").endpoints
-
-    Router[ServerRIO](basePath -> userEndpoint).orNotFound
+    val userEndpoint    = new UserEndpoint[AppEnvironment]("user").endpoints
+    val productEndpoint = new ProductEndpoint[AppEnvironment]("product").endpoints
+    val routes          = userEndpoint <+> productEndpoint
+    Router[ServerRIO](basePath -> routes).orNotFound
   }
 
   def createServer(cfg: HttpServerConfig): ZIO[AppEnvironment, Throwable, Unit] = {

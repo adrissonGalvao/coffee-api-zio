@@ -3,7 +3,7 @@ package environment.effect.repository
 import domain.{User, UserCommand}
 import doobie.util.transactor.Transactor
 import environment.Environments.UserEnvironment
-import failures.environmental.UserRepositoryFailure
+import failures.environmental.{RepositoryFailure}
 import zio.{Task, ZIO}
 
 trait UserRepository {
@@ -12,8 +12,8 @@ trait UserRepository {
 
 object UserRepository {
   trait Effect {
-    def createUser(userC: UserCommand): ZIO[UserEnvironment, UserRepositoryFailure, Unit]
-    def findUserByEmail(email: String): ZIO[UserEnvironment, UserRepositoryFailure, Option[User]]
+    def createUser(userC: UserCommand): ZIO[UserEnvironment, RepositoryFailure, Unit]
+    def findUserByEmail(email: String): ZIO[UserEnvironment, RepositoryFailure, Option[User]]
   }
 
   trait Live {
@@ -23,22 +23,21 @@ object UserRepository {
       import doobie.implicits._
       import zio.interop.catz._
 
-      override def createUser(userC: UserCommand): ZIO[UserEnvironment, UserRepositoryFailure, Unit] = ZIO.accessM {
-        _ =>
-          def query =
-            sql"""
+      override def createUser(userC: UserCommand): ZIO[UserEnvironment, RepositoryFailure, Unit] = ZIO.accessM { _ =>
+        def query =
+          sql"""
                |INSERT INTO user
                | (full_name,email,password)
                | values (${userC.fullName},${userC.email},${userC.password})
       """.stripMargin
 
-          query.update.run
-            .transact(xa)
-            .map(_ => ())
-            .mapError(_ => UserRepositoryFailure.RepositoryDefect("noT create user "))
+        query.update.run
+          .transact(xa)
+          .map(_ => ())
+          .mapError(_ => RepositoryFailure.RepositoryDefect("noT create user "))
       }
 
-      override def findUserByEmail(email: String): ZIO[UserEnvironment, UserRepositoryFailure, Option[User]] =
+      override def findUserByEmail(email: String): ZIO[UserEnvironment, RepositoryFailure, Option[User]] =
         ZIO.accessM { _ =>
           def statement =
             sql"""
@@ -57,7 +56,7 @@ object UserRepository {
               case u :: Nil => ZIO.succeed(Some(u))
               case _        => ZIO.succeed(None)
             }
-            .mapError(_ => UserRepositoryFailure.RepositoryDefect("not select user "))
+            .mapError(_ => RepositoryFailure.RepositoryDefect("not select user "))
         }
     }
 
