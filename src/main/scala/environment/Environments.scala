@@ -20,8 +20,8 @@ object Environments {
     with DBConfig
     with UserRepository
     with ProductRepository
-  type UserEnvironment    = Blocking with DBConfig with UserRepository
-  type ProductEnvironment = Blocking with DBConfig with ProductRepository
+  type UserEnvironment    = Clock with Blocking with DBConfig with UserRepository
+  type ProductEnvironment = Clock with Blocking with DBConfig with ProductRepository
 
   def createEnvironment(cfg: AppConfig, transactor: Transactor[Task]): ZIO[Any, Nothing, AppEnvironment] =
     ZIO.effect {

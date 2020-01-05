@@ -1,9 +1,9 @@
 package support
 
-import domain.{ProductCommand, User, UserCommand}
+import domain.{Product, ProductCommand, User, UserCommand}
 import endpoint.r.ErrorResponse
 import io.circe.Json.Null
-import io.circe.generic.semiauto
+import io.circe.generic.semiauto._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, Printer}
 import org.http4s.circe.{jsonEncoderOf, jsonOf}
@@ -13,17 +13,19 @@ import zio.interop.catz._
 
 trait CirceEncoder {
 
-  implicit val UserEncoder: Encoder[User] = semiauto.deriveEncoder[User]
+  implicit val UserEncoder: Encoder[User] = deriveEncoder[User]
 
   implicit val ErrorResponseEncoder: Encoder[ErrorResponse] =
-    semiauto.deriveEncoder[ErrorResponse]
+    deriveEncoder[ErrorResponse]
+
+  implicit val ProductEncoder: Encoder[Product] = deriveEncoder[Product]
 
 }
 
 trait CirceDecoder {
 
-  implicit val UserDecoder: Decoder[UserCommand]              = semiauto.deriveDecoder[UserCommand]
-  implicit val ProductCommandDecoder: Decoder[ProductCommand] = semiauto.deriveDecoder[ProductCommand]
+  implicit val UserDecoder: Decoder[UserCommand]              = deriveDecoder[UserCommand]
+  implicit val ProductCommandDecoder: Decoder[ProductCommand] = deriveDecoder[ProductCommand]
 
 }
 

@@ -48,11 +48,9 @@ object ProductRepository {
                  |p.name,
                  |u.id,
                  |u.full_name,
-                 |u.email,
-                 |FROM product p
-                 |INNER JOIN user u
-                 |ON u.id=p.user_id
-                 |""".stripMargin
+                 |u.email
+                 |FROM product p INNER JOIN user u ON u.id=p.user_id
+                 """.stripMargin
 
           val q = statement.query[(Long, String, Long, String, String)]
 

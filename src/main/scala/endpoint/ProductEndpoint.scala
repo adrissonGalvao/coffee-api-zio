@@ -8,7 +8,7 @@ import failures.ProductFailure
 import org.http4s.{HttpRoutes, Response}
 import org.http4s.dsl.Http4sDsl
 import support.JsonHttp4s
-import zio.RIO
+import zio.{RIO}
 import zio.interop.catz._
 
 class ProductEndpoint[R <: ProductEnvironment](rootUri: String) extends JsonHttp4s[R] {
@@ -24,8 +24,7 @@ class ProductEndpoint[R <: ProductEnvironment](rootUri: String) extends JsonHttp
     case e: FieldInvalid         => BadRequest(ErrorResponse(e.msg))
     case _: ProductParserInvalid => UnprocessableEntity("Json not is valid")
     case e: RepositoryInvalid    => BadRequest(ErrorResponse(e.er.toString))
-
-    case _ => InternalServerError()
+    case _                       => InternalServerError()
   }
 
   def endpoints: HttpRoutes[ProductEndpointTask] = HttpRoutes.of[ProductEndpointTask] {
@@ -38,6 +37,9 @@ class ProductEndpoint[R <: ProductEnvironment](rootUri: String) extends JsonHttp
 
       pipe
         .foldM(e => handleError(e), Created(_))
+
+    case _ @GET -> Root / `rootUri` =>
+      listAllProduct().foldM(e => handleError(e), Ok(_))
 
   }
 }
