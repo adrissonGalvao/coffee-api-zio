@@ -15,6 +15,7 @@ object ProductRepository {
   trait Effect {
     def createProduct(productC: ProductCommand): ZIO[ProductEnvironment, RepositoryFailure, Unit]
     def listAllProduct(): ZIO[ProductEnvironment, RepositoryFailure, List[Product]]
+    def findProduct(id: Long): ZIO[ProductEnvironment, RepositoryFailure, Option[Product]]
   }
 
   trait Live {
@@ -67,6 +68,35 @@ object ProductRepository {
             }
             .mapError(e => RepositoryDefect(e.getMessage))
 
+        }
+
+      override def findProduct(id: Long): ZIO[ProductEnvironment, RepositoryFailure, Option[Product]] =
+        ZIO.accessM { _ =>
+          def statement = sql"""
+            |SELECT 
+            |p.id,
+            |p.name,
+            |u.id,
+            |u.full_name,
+            |u.email
+            |FROM product p INNER JOIN user u ON u.id=p.user_id
+            |WHERE p.id=$id
+                 """.stripMargin
+
+          val q = statement.query[(Long, String, Long, String, String)]
+
+          q.to[List]
+            .transact(xa)
+            .flatMap { els =>
+              els.map(t => {
+                val user = User(t._3, t._4, t._5)
+                Product(t._1, t._2, user)
+              }) match {
+                case p :: Nil => ZIO.succeed(Some(p))
+                case _        => ZIO.succeed(None)
+              }
+            }
+            .mapError(e => RepositoryDefect(e.getMessage))
         }
     }
 

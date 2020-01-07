@@ -3,12 +3,12 @@ package endpoint
 import domain.ProductCommand
 import endpoint.r.ErrorResponse
 import environment.Environments.ProductEnvironment
-import failures.ProductFailure.{FieldInvalid, ProductParserInvalid, RepositoryInvalid}
+import failures.ProductFailure.{FieldInvalid, NotFoundProduct, ProductParserInvalid, RepositoryInvalid}
 import failures.ProductFailure
 import org.http4s.{HttpRoutes, Response}
 import org.http4s.dsl.Http4sDsl
 import support.JsonHttp4s
-import zio.{RIO}
+import zio.RIO
 import zio.interop.catz._
 
 class ProductEndpoint[R <: ProductEnvironment](rootUri: String) extends JsonHttp4s[R] {
@@ -23,6 +23,7 @@ class ProductEndpoint[R <: ProductEnvironment](rootUri: String) extends JsonHttp
   private def handleError(f: ProductFailure): ProductEndpointTask[Response[ProductEndpointTask]] = f match {
     case e: FieldInvalid         => BadRequest(ErrorResponse(e.msg))
     case _: ProductParserInvalid => UnprocessableEntity("Json not is valid")
+    case e: NotFoundProduct      => NotFound(e.msg)
     case e: RepositoryInvalid    => BadRequest(ErrorResponse(e.er.toString))
     case _                       => InternalServerError()
   }
@@ -41,5 +42,7 @@ class ProductEndpoint[R <: ProductEnvironment](rootUri: String) extends JsonHttp
     case _ @GET -> Root / `rootUri` =>
       listAllProduct().foldM(e => handleError(e), Ok(_))
 
+    case _ @GET -> Root / `rootUri` / LongVar(id) =>
+      findProduct(id).foldM(e => handleError(e), Ok(_))
   }
 }
