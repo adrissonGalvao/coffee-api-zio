@@ -1,0 +1,1 @@
+sh $PWD/src/main/resources/migrations/flyway.sh

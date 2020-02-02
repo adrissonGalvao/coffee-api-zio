@@ -5,9 +5,8 @@ version := "0.1"
 
 scalaVersion := "2.12.10"
 
-enablePlugins(JavaAppPackaging)
-
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.10")
+
 
 scalacOptions ++= Seq(
   "-Ypartial-unification",
@@ -61,6 +60,7 @@ libraryDependencies ++= Seq(
   "org.tpolecat"               %% "doobie-core"                   % doobieVersion,
   "org.tpolecat"               % "doobie-hikari_2.12"             % doobieVersion,
   "mysql"                      % "mysql-connector-java"           % mysqlVersion,
+  "org.flywaydb"               % "flyway-core"                    % flywayVersion,
 )
 
 //Core

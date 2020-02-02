@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+#  api:
+#    image: adoptopenjdk/openjdk11:jdk-11.0.3_7
+#    volumes:
+#      - ./api.jar:/coffee.jar
+#    command: ["java", "-jar", "coffee.jar"]
+#    environment:
+#      - PORT=8080
+#      - DB_PASSWORD=coffee
+#      - DB_URL=jdbc:mysql://localhost:3306/coffee_bd
+#      - DB_USER=root
+#    ports:
+#      - 8080:8080
+#    depends_on:
+#      - coffee-db-test
+  coffee-db-test:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=coffee
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+
+
+
+
+

@@ -10,6 +10,7 @@ import zio.{RIO, ZIO}
 import zio.interop.catz._
 import org.http4s.implicits._
 import cats.syntax.all._
+import org.http4s.server.middleware.CORS
 import typedconfig.HttpServerConfig
 
 object Server {
@@ -31,7 +32,7 @@ object Server {
       .flatMap { implicit rts =>
         BlazeServerBuilder[ServerRIO]
           .bindHttp(cfg.port, "0.0.0.0")
-          .withHttpApp(createRoutes(cfg.context))
+          .withHttpApp(CORS(createRoutes(cfg.context)))
           .serve
           .compile[ServerRIO, ServerRIO, ExitCode]
           .drain

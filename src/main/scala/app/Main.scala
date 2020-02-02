@@ -12,8 +12,7 @@ object Main extends App {
       cfg        <- ZIO.fromEither(ConfigLoader.load)
       transactor <- TransactorBuilder.createTransactor(cfg.database)
       env        <- Environments.createEnvironment(cfg, transactor)
-
-      _ <- Server.createServer(cfg.httpServer).provide(env)
+      _          <- Server.createServer(cfg.httpServer).provide(env)
 
     } yield ()
 
