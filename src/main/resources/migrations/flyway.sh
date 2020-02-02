@@ -1,2 +1,2 @@
-flyway -user=root -password=coffee -url=jdbc:mysql://localhost:3306/coffee_bd -driver=com.mysql.cj.jdbc.Driver -locations=filesystem:./src/main/resources/migrations clean
-flyway -user=root -password=coffee -url=jdbc:mysql://localhost:3306/coffee_bd -driver=com.mysql.cj.jdbc.Driver -locations=filesystem:./src/main/resources/migrations migrate
+flyway -user=$DB_USER -password=$DB_PASSWORD -url=$DB_URL -driver=com.mysql.cj.jdbc.Driver -locations=filesystem:./src/main/resources/migrations clean
+flyway -user=$DB_USER -password=$DB_PASSWORD -url=$DB_URL -driver=com.mysql.cj.jdbc.Driver -locations=filesystem:./src/main/resources/migrations migrate
